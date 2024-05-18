@@ -9,6 +9,8 @@ int inputMaxKursi, inputKursiTersisa;
 
 void menuTambah()
 {
+
+    cout << "Menu Tambah: ";
     cout << "Masukkan asal: ";
     cin >> inputAsal;
     cout << "Masukkan tujuan: ";
