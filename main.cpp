@@ -38,6 +38,27 @@ int main()
     Tampil(jml_user);
 
     // menuRegister();
-    // Tampil(Costumer, jml_costumer);
+    
+    tambahJadwal("Bumiayu", "Purwokerto", "15:00", 5, 35000);
+    tambahJadwal("Bumiayu", "Purwokerto", "13:00", 5, 35000);
+    tambahJadwal("Purwokerto", "Bumiayu", "15:00", 5, 35000);
+    tambahJadwal("Bojo", "Bumiayu", "12:00", 5, 35000);
+
+    lihatJadwal();
+    cout << endl;
+
+    cout << endl;
+    tambahPesanan(1, "Ojan", 2);
+    tambahPesanan(2, "Ojan", 2);
+
+    cout << endl;
+    lihatPesanan();
+
+    cout << "Layani pesanan" << endl;
+    layaniPesanan();
+
+    cout << endl;
+    lihatPesanan();
+
     return 0;
 }
