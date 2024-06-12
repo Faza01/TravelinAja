@@ -1,7 +1,6 @@
-#include "operation.h"
+#include "./users/menuUsers.h"
 
-string inputNama;
-float inputUsia;
+int inputUsia;
 string inputUsr;
 string inputPw;
 
@@ -13,52 +12,66 @@ void menuLogin()
     cout << "Masukkan password: ";
     getline(cin, inputPw);
 
-    Register(inputNama, inputUsia, inputUsr, inputPw);
+    string role = login(inputUsr, inputPw);
+    if (role == "admin")
+    {
+        menu_admin();
+    }
+    else if (role == "user")
+    {
+        menu_customer();
+    }
+    else
+    {
+        cout << "Login gagal!" << endl;
+    }
 }
 
 void menuRegister()
 {
-    cout << "Masukkan nama: ";
-    getline(cin, inputNama);
-    cout << "Masukkan Usia: ";
-    cin >> inputUsia;
-
     cin.ignore();
     cout << "Masukkan username: ";
     getline(cin, inputUsr);
     cout << "Masukkan password: ";
     getline(cin, inputPw);
 
-    Register(inputNama, inputUsia, inputUsr, inputPw);
+    cout << "Masukkan Usia: ";
+    cin >> inputUsia;
+    registrasi(inputUsr, inputPw, inputUsia);
 }
 
 int main()
 {
-    Register("Tes", 12, "Tes", "Tes");
-    Tampil(jml_user);
+    inisialisasiAdmin();
+    int pilihan;
+    do
+    {
+        cout << "=== Menu ===" << endl;
+        cout << "1. Login" << endl;
+        cout << "2. Register" << endl;
+        cout << "3. Keluar" << endl;
+        cout << "Pilih: ";
+        cin >> pilihan;
 
-    // menuRegister();
-    
-    tambahJadwal("Bumiayu", "Purwokerto", "15:00", 5, 35000);
-    tambahJadwal("Bumiayu", "Purwokerto", "13:00", 5, 35000);
-    tambahJadwal("Purwokerto", "Bumiayu", "15:00", 5, 35000);
-    tambahJadwal("Bojo", "Bumiayu", "12:00", 5, 35000);
-
-    lihatJadwal();
-    cout << endl;
-
-    cout << endl;
-    tambahPesanan(1, "Ojan", 2);
-    tambahPesanan(2, "Ojan", 2);
-
-    cout << endl;
-    lihatPesanan();
-
-    cout << "Layani pesanan" << endl;
-    layaniPesanan();
-
-    cout << endl;
-    lihatPesanan();
+        switch (pilihan)
+        {
+        case 1:
+        {
+            menuLogin();
+            break;
+        }
+        case 2:
+        {
+            menuRegister();
+            break;
+        }
+        case 3:
+            cout << "Keluar program." << endl;
+            break;
+        default:
+            cout << "Pilihan tidak valid!" << endl;
+        }
+    } while (pilihan != 3);
 
     return 0;
 }
