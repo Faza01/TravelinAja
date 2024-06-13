@@ -5,16 +5,17 @@ void menu_admin()
     int pilihan;
     do
     {
-        cout << "=== Admin Menu ===" << endl;
-        cout << "1. Lihat Jadwal" << endl;
-        cout << "2. Tambah Jadwal" << endl;
-        cout << "3. Hapus Jadwal" << endl;
-        cout << "4. Lihat Driver" << endl;
-        cout << "5. Tambah Driver" << endl;
-        cout << "6. Lihat Pesanan" << endl;
-        cout << "7. Ubah Status Pesanan" << endl;
-        cout << "8. Logout" << endl;
-        cout << "Pilih: ";
+        system("cls");
+        cout << "\t=== Admin Menu ===" << endl;
+        cout << "\t1. Lihat Jadwal" << endl;
+        cout << "\t2. Tambah Jadwal" << endl;
+        cout << "\t3. Hapus Jadwal" << endl;
+        cout << "\t4. Lihat Driver" << endl;
+        cout << "\t5. Tambah Driver" << endl;
+        cout << "\t6. Lihat Pesanan" << endl;
+        cout << "\t7. Rekap Pesanan" << endl;
+        cout << "\t8. Logout" << endl;
+        cout << "\tPilih: ";
         cin >> pilihan;
 
         switch (pilihan)
@@ -24,29 +25,13 @@ void menu_admin()
             break;
         case 2:
         {
-            string asal, tujuan, waktu;
-            int hari, estimasi, kursi, harga;
-            cout << "Masukkan asal: ";
-            cin >> asal;
-            cout << "Masukkan tujuan: ";
-            cin >> tujuan;
-            cout << "Masukkan hari (0-6): ";
-            cin >> hari;
-            cout << "Masukkan waktu: ";
-            cin >> waktu;
-            cout << "Masukkan estimasi: ";
-            cin >> estimasi;
-            cout << "Masukkan jumlah kursi: ";
-            cin >> kursi;
-            cout << "Masukkan harga: ";
-            cin >> harga;
-            tambahJadwal(asal, tujuan, waktu, hari, estimasi, kursi, harga);
+            tambahJadwal();
             break;
         }
         case 3:
         {
             int id;
-            cout << "Masukkan ID jadwal yang ingin dihapus: ";
+            cout << "\tMasukkan ID jadwal yang ingin dihapus: ";
             cin >> id;
             hapusJadwal(id - 1);
             break;
@@ -56,36 +41,34 @@ void menu_admin()
             break;
         case 5:
         {
-            string nama, plat;
+            string namaSupir, plat;
             bool status;
-            cout << "Masukkan nama driver: ";
-            cin >> nama;
-            cout << "Masukkan plat nomor: ";
-            cin >> plat;
-            cout << "Masukkan status (1 untuk aktif, 0 untuk tidak aktif): ";
+            cin.ignore();
+            cout << "\tMasukkan nama driver: ";
+            getline(cin, namaSupir);
+            cout << "\tMasukkan plat nomor: ";
+            getline(cin, plat);
+            cout << "\tMasukkan status (1 untuk aktif, 0 untuk tidak aktif): ";
             cin >> status;
-            tambahDriver(nama, plat, status);
+            tambahDriver(namaSupir, plat, status);
             break;
         }
         case 6:
-            lihatPesanan();
-            break;
-        case 7:
         {
-            int id, status;
-            cout << "Masukkan ID pesanan: ";
-            cin >> id;
-            cout << "Masukkan status (1. Belum Bayar, 2. Mencari Supir, 3. Sukses): ";
-            cin >> status;
-            gantiStatus(id, status);
+            tampilRiwayat();
             break;
         }
+        case 7:
+            rekapPesanan();
+            break;
         case 8:
-            cout << "Logout berhasil!" << endl;
+            cout << "\tLogout berhasil!" << endl;
             break;
         default:
-            cout << "Pilihan tidak valid!" << endl;
+            cout << "\tPilihan tidak valid!" << endl;
         }
+        cout << endl;
+        system("pause");
     } while (pilihan != 8);
 }
 
@@ -94,12 +77,14 @@ void menu_customer()
     int pilihan;
     do
     {
-        cout << "=== Customer Menu ===" << endl;
-        cout << "1. Lihat Jadwal" << endl;
-        cout << "2. Pesan Jadwal" << endl;
-        cout << "3. Lihat Pesanan" << endl;
-        cout << "4. Logout" << endl;
-        cout << "Pilih: ";
+        system("cls");
+        cout << "\t=== Customer Menu ===" << endl;
+        cout << "\t1. Lihat Jadwal" << endl;
+        cout << "\t2. Pesan Jadwal" << endl;
+        cout << "\t3. Lihat Pesanan" << endl;
+        cout << "\t4. Lihat Riwayat Pesanan" << endl;
+        cout << "\t5. Logout" << endl;
+        cout << "\tPilih: ";
         cin >> pilihan;
 
         switch (pilihan)
@@ -109,31 +94,30 @@ void menu_customer()
             break;
         case 2:
         {
-            string nama, asal, tujuan, noHp;
-            int jadwalId, jumlahOrang;
-            cout << "Masukkan ID jadwal: ";
-            cin >> jadwalId;
-            cout << "Masukkan nama: ";
-            cin >> nama;
-            cout << "Masukkan alamat asal: ";
-            cin >> asal;
-            cout << "Masukkan alamat tujuan: ";
-            cin >> tujuan;
-            cout << "Masukkan no HP: ";
-            cin >> noHp;
-            cout << "Masukkan jumlah orang: ";
-            cin >> jumlahOrang;
-            tambahPesanan(jadwalId, nama, asal, tujuan, noHp, jumlahOrang);
+            tambahPesanan();
             break;
         }
         case 3:
             lihatPesanan();
+
+            char bayar;
+            cout << "\t\nBayar Pesanan? (y/n): ";
+            cin >> bayar;
+            if (bayar == 'y' || bayar == 'Y')
+            {
+                bayarPesanan();
+            }
             break;
         case 4:
-            cout << "Logout berhasil!" << endl;
+            tampilRiwayat();
+            break;
+        case 5:
+            cout << "\tLogout berhasil!" << endl;
             break;
         default:
-            cout << "Pilihan tidak valid!" << endl;
+            cout << "\tPilihan tidak valid!" << endl;
         }
-    } while (pilihan != 4);
+        cout << endl;
+        system("pause");
+    } while (pilihan != 5);
 }

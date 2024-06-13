@@ -38,18 +38,18 @@ void registrasi(string username, string password, float usia)
     {
         if (users[i].username == username)
         {
-            cout << "Username sudah digunakan" << endl;
+            cout << "\tUsername sudah digunakan" << endl;
             return;
         }
     }
     if (jml_user < MAX_USER)
     {
         users[jml_user++] = {username, password, usia, "user"};
-        cout << "Berhasil mendaftar sebagai customer." << endl;
+        cout << "\tBerhasil mendaftar sebagai customer." << endl;
     }
     else
     {
-        cout << "User limit reached" << endl;
+        cout << "\tUser limit reached" << endl;
     }
 }
 
@@ -57,14 +57,14 @@ void tampilUser()
 {
     for (int i = 0; i < jml_user; i++)
     {
-        cout << "Username: " << users[i].username << endl;
-        cout << "Password: " << users[i].password << endl;
-        cout << "Role: " << users[i].role << endl
+        cout << "\tUsername: " << users[i].username << endl;
+        cout << "\tPassword: " << users[i].password << endl;
+        cout << "\tRole: " << users[i].role << endl
              << endl;
     }
 }
 
-const int MAX_SUPIR = 99;
+const int MAX_SUPIR = 10;
 struct Driver
 {
     string nama;
@@ -80,26 +80,34 @@ void tambahDriver(string nama, string plat_nomor, bool status)
     {
         if (drivers[i].nama == nama)
         {
-            cout << "Supir sudah ada" << endl;
+            cout << "\tSupir ini sudah ada" << endl;
             return;
         }
     }
     if (jumlah_supir < MAX_SUPIR)
     {
         drivers[jumlah_supir++] = {nama, plat_nomor, status};
-        cout << "Berhasil menambahkan driver." << endl;
+        cout << "\tBerhasil menambahkan supir." << endl;
     }
     else
     {
-        cout << "Driver limit reached" << endl;
+        cout << "\tSupir sudah penuh" << endl;
     }
 }
 
 void tampilDriver()
 {
+    if (jumlah_supir == 0)
+    {
+        cout << "\tMaaf Belum ada data Supir" << endl;
+        return;
+    }
+
     for (int i = 0; i < jumlah_supir; i++)
     {
-        cout << i + 1 << ". Nama: " << drivers[i].nama << "\nPlat: " << drivers[i].plat_nomor << "\nStatus: " << (drivers[i].status ? "Aktif" : "Tidak Aktif") << endl;
+        cout << "\t" << i + 1 << ". Nama: " << drivers[i].nama << endl;
+        cout << "\tPlat: " << drivers[i].plat_nomor << endl;
+        cout << "\tStatus: " << (drivers[i].status ? "Aktif" : "Tidak Aktif") << endl;
     }
 }
 
@@ -107,12 +115,12 @@ bool cekDriver(int index)
 {
     if (index < 0 || index >= jumlah_supir)
     {
-        cout << "Driver tidak ditemukan." << endl;
+        cout << "\tDriver tidak ditemukan." << endl;
         return false;
     }
     else if (!drivers[index].status)
     {
-        cout << "Driver tidak aktif" << endl;
+        cout << "\tDriver tidak aktif" << endl;
         return false;
     }
     return true;
@@ -126,6 +134,7 @@ struct Jadwal
     string hari;
     string waktu;
     int estimasi;
+    string supir;
     int kursi;
     int harga;
     Jadwal *next;
@@ -139,14 +148,56 @@ Jadwal *jadwal;
 Jadwal *head = NULL;
 Jadwal *tail = NULL;
 
-void buatJadwal(string asal, string tujuan, int hariIndex, string waktu, int estimasi, int kursi, int harga)
+void buatJadwal(string asal, string tujuan, int hariIndex, string waktu, int estimasi, string supir, int kursi, int harga)
 {
-    jadwal = new Jadwal{id_jadwal++, asal, tujuan, HARI[hariIndex], waktu, estimasi, kursi, harga, NULL, NULL};
+    jadwal = new Jadwal{id_jadwal++, asal, tujuan, HARI[hariIndex], waktu, estimasi, supir, kursi, harga, NULL, NULL};
 }
 
-void tambahJadwal(string asal, string tujuan, string waktu, int hariIndex, int estimasi, int kursi, int harga)
+void tambahJadwal()
 {
-    buatJadwal(asal, tujuan, hariIndex, waktu, estimasi, kursi, harga);
+    if (jumlah_supir == 0)
+    {
+        cout << "\tMaaf Belum ada data Supir" << endl;
+        cout << "\tData supir diperlukan untuk membuat jadwal!" << endl;
+        cout << "\tSilahkan tambah supir terlebih dahulu..." << endl;
+        return;
+    }
+
+    string asal, tujuan, waktu;
+    int hariIndex, estimasi, kursi, harga, pilihSupir;
+    cin.ignore();
+    cout << "\tMasukkan asal: ";
+    getline(cin, asal);
+    cout << "\tMasukkan tujuan: ";
+    getline(cin, tujuan);
+    cout << "\tMasukkan hari (0-6): ";
+    cin >> hariIndex;
+    if (hariIndex < 0 || hariIndex >= MAX_HARI)
+    {
+        cout << "\tHari index tidak valid." << endl;
+        return;
+    }
+    cout << "\tMasukkan waktu: ";
+    cin >> waktu;
+    cout << "\tMasukkan estimasi: ";
+    cin >> estimasi;
+
+    // memilih supir
+    tampilDriver();
+    cout << "\tPilih supir (masukkan nomor): ";
+    cin >> pilihSupir;
+
+    if (pilihSupir < 1 || pilihSupir > jumlah_supir)
+    {
+        cout << "\tPilihan tidak valid." << endl;
+        return;
+    }
+    cout << "\tMasukkan jumlah kursi: ";
+    cin >> kursi;
+    cout << "\tMasukkan harga: ";
+    cin >> harga;
+
+    buatJadwal(asal, tujuan, hariIndex, waktu, estimasi, drivers[pilihSupir - 1].nama, kursi, harga);
     if (!head && !tail)
     {
         head = tail = jadwal;
@@ -159,28 +210,29 @@ void tambahJadwal(string asal, string tujuan, string waktu, int hariIndex, int e
         jadwal->next = head;
         head->prev = tail = jadwal;
     }
-    cout << "Jadwal berhasil ditambahkan!" << endl;
+    cout << "\tJadwal berhasil ditambahkan!" << endl;
 }
 
 void lihatJadwal()
 {
     if (!head && !tail)
     {
-        cout << "Tidak ada jadwal yang tersedia." << endl;
+        cout << "\tTidak ada jadwal yang tersedia." << endl;
         return;
     }
     Jadwal *current = head;
     do
     {
-        cout << "Id Jadwal: " << current->id + 1 << endl;
-        cout << "Asal          : " << current->asal << endl;
-        cout << "Tujuan        : " << current->tujuan << endl;
-        cout << "Hari          : " << current->hari << endl;
-        cout << "Waktu         : " << current->waktu << endl;
-        cout << "Estimasi      : " << current->estimasi << " jam" << endl;
-        cout << "Kursi Tersisa : " << current->kursi << endl;
-        cout << "Harga         : Rp. " << current->harga << endl;
-        cout << "--------------------------" << endl;
+        cout << "\tId Jadwal: " << current->id + 1 << endl;
+        cout << "\tAsal          : " << current->asal << endl;
+        cout << "\tTujuan        : " << current->tujuan << endl;
+        cout << "\tHari          : " << current->hari << endl;
+        cout << "\tWaktu         : " << current->waktu << endl;
+        cout << "\tEstimasi      : " << current->estimasi << " jam" << endl;
+        cout << "\tSupir         : " << current->supir << endl;
+        cout << "\tKursi Tersisa : " << current->kursi << endl;
+        cout << "\tHarga         : Rp. " << current->harga << endl;
+        cout << "\t--------------------------" << endl;
         current = current->next;
     } while (current != head);
 }
@@ -204,7 +256,7 @@ void hapusJadwal(int id)
     Jadwal *target = cariJadwal(id);
     if (!target)
     {
-        cout << "Data yang dicari tidak ditemukan." << endl;
+        cout << "\tData yang dicari tidak ditemukan." << endl;
         return;
     }
     if (target == head && target == tail)
@@ -221,7 +273,7 @@ void hapusJadwal(int id)
             tail = tail->prev;
     }
     delete target;
-    cout << "Jadwal berhasil dihapus!" << endl;
+    cout << "\tJadwal berhasil dihapus!" << endl;
 }
 
 const int MAX_PESANAN = 100;
@@ -239,129 +291,252 @@ struct Pesanan
     int jumlahOrang[MAX_PESANAN];
     string status[MAX_PESANAN];
     string driver[MAX_PESANAN];
-    int depan = -1;
-    int belakang = -1;
 };
-
 Pesanan pesanan;
-const string STATUS[3] = {"Belum Bayar", "Mencari Supir", "Sukses"};
+int pesananDepan = -1;
+int pesananBelakang = -1;
 
-void tambahPesanan(int jadwalId, string namaPemesan, string alamat_asal, string alamat_tujuan, string noHp, int jumlahOrang)
+Pesanan riwayatPesanan;
+int posisiRiwayat = -1;
+
+const string STATUS[2] = {"Belum Bayar", "Sukses"};
+
+void tambahPesanan()
 {
-    Jadwal *jadwal = cariJadwal(jadwalId);
+    string namaPemesan, alamat_asal, alamat_tujuan, noHp;
+    int jadwalId, jumlahOrang;
+
+    cout << "\tMasukkan ID jadwal: ";
+    cin >> jadwalId;
+
+    Jadwal *jadwal = cariJadwal(jadwalId - 1);
     if (!jadwal)
     {
-        cout << "Jadwal tidak ditemukan." << endl;
+        cout << "\tJadwal tidak ditemukan." << endl;
         return;
     }
-    if (pesanan.depan == -1 && pesanan.belakang == -1)
+
+    if (jadwal->kursi == 0)
     {
-        pesanan.depan = pesanan.belakang = 0;
+        cout << "\tMaaf tiket untuk travel ini sudah habis" << endl;
+        return;
+    }
+
+    cin.ignore();
+    cout << "\tPesanan atas Nama: ";
+    getline(cin, namaPemesan);
+    cout << "\tMasukkan alamat asal: ";
+    getline(cin, alamat_asal);
+    cout << "\tMasukkan alamat tujuan: ";
+    getline(cin, alamat_tujuan);
+    cout << "\tMasukkan no HP: ";
+    cin >> noHp;
+    cout << "\tMasukkan jumlah orang: ";
+    cin >> jumlahOrang;
+    if (jumlahOrang > jadwal->kursi)
+    {
+        cout << "\tMaaf, kursi tidak cukup" << endl;
+        return;
+    }
+
+    if (pesananDepan == -1 && pesananBelakang == -1)
+    {
+        pesananDepan = pesananBelakang = 0;
     }
     else
     {
-        pesanan.belakang++;
+        pesananBelakang++;
     }
-    int idB = pesanan.belakang;
-    pesanan.namaPemesan[idB] = namaPemesan;
-    pesanan.asal[idB] = jadwal->asal;
-    pesanan.alamat_asal[idB] = alamat_asal;
-    pesanan.tujuan[idB] = jadwal->tujuan;
-    pesanan.alamat_tujuan[idB] = alamat_tujuan;
-    pesanan.noHp[idB] = noHp;
-    pesanan.waktu[idB] = jadwal->waktu;
-    pesanan.estimasi[idB] = jadwal->estimasi;
-    pesanan.jumlahOrang[idB] = jumlahOrang;
-    pesanan.harga[idB] = jadwal->harga;
-    pesanan.status[idB] = STATUS[0];
-    pesanan.driver[idB] = "";
-    cout << "Pesanan berhasil ditambahkan." << endl;
+    int idP = pesananBelakang;
+    pesanan.namaPemesan[idP] = namaPemesan;
+    pesanan.asal[idP] = jadwal->asal;
+    pesanan.alamat_asal[idP] = alamat_asal;
+    pesanan.tujuan[idP] = jadwal->tujuan;
+    pesanan.alamat_tujuan[idP] = alamat_tujuan;
+    pesanan.noHp[idP] = noHp;
+    pesanan.waktu[idP] = jadwal->waktu;
+    pesanan.estimasi[idP] = jadwal->estimasi;
+    pesanan.jumlahOrang[idP] = jumlahOrang;
+    pesanan.harga[idP] = jadwal->harga;
+    pesanan.status[idP] = STATUS[0];
+    pesanan.driver[idP] = jadwal->supir;
+
+    jadwal->kursi -= jumlahOrang;
+    cout << "\tPesanan berhasil ditambahkan." << endl;
 }
 
 void lihatPesanan()
 {
-    if (pesanan.depan == -1 && pesanan.belakang == -1)
+    if (pesananDepan == -1 && pesananBelakang == -1)
     {
-        cout << "Tidak ada pesanan." << endl;
+        cout << "\tTidak ada pesanan." << endl;
         return;
     }
-    for (int i = pesanan.depan; i <= pesanan.belakang; i++)
+    for (int i = pesananDepan; i <= pesananBelakang; i++)
     {
-        cout << "Data ke-" << i + 1 << endl;
-        cout << "Nama Pemesan  : " << pesanan.namaPemesan[i] << endl;
-        cout << "Asal          : " << pesanan.asal[i] << endl;
-        cout << "Alamat Asal   : " << pesanan.alamat_asal[i] << endl;
-        cout << "Tujuan        : " << pesanan.tujuan[i] << endl;
-        cout << "Alamat Tujuan : " << pesanan.alamat_tujuan[i] << endl;
-        cout << "No. HP        : " << pesanan.noHp[i] << endl;
-        cout << "Waktu         : " << pesanan.waktu[i] << endl;
-        cout << "Estimasi      : " << pesanan.estimasi[i] << " jam" << endl;
-        cout << "Jumlah Orang  : " << pesanan.jumlahOrang[i] << endl;
-        cout << "Harga         : Rp. " << pesanan.harga[i] << endl;
-        cout << "Status        : " << pesanan.status[i] << endl;
-        cout << "Driver        : " << (pesanan.driver[i].empty() ? "Belum ada supir" : pesanan.driver[i]) << endl;
-        cout << "--------------------------" << endl;
+        cout << "\tPesanan ke-" << i + 1 << endl;
+        cout << "\tNama Pemesan  : " << pesanan.namaPemesan[i] << endl;
+        cout << "\tAsal          : " << pesanan.asal[i] << endl;
+        cout << "\tAlamat Asal   : " << pesanan.alamat_asal[i] << endl;
+        cout << "\tTujuan        : " << pesanan.tujuan[i] << endl;
+        cout << "\tAlamat Tujuan : " << pesanan.alamat_tujuan[i] << endl;
+        cout << "\tNo. HP        : " << pesanan.noHp[i] << endl;
+        cout << "\tWaktu         : " << pesanan.waktu[i] << endl;
+        cout << "\tEstimasi      : " << pesanan.estimasi[i] << " jam" << endl;
+        cout << "\tJumlah Orang  : " << pesanan.jumlahOrang[i] << endl;
+        cout << "\tDriver        : " << pesanan.driver[i] << endl;
+        cout << "\tHarga         : Rp. " << pesanan.harga[i] << endl;
+        cout << "\tTotal Harga   : Rp. " << pesanan.jumlahOrang[i] * pesanan.harga[i] << endl;
+        cout << "\tStatus        : " << pesanan.status[i] << endl;
+        cout << "\t--------------------------" << endl;
     }
 }
 
 void gantiStatus(int idPesanan, int statusId)
 {
-    if (idPesanan > 0 && idPesanan <= pesanan.belakang + 1)
+    if (idPesanan > 0 && idPesanan <= pesananBelakang + 1)
     {
         pesanan.status[idPesanan - 1] = STATUS[statusId - 1];
-        cout << "Status berhasil diubah." << endl;
+        cout << "\tStatus berhasil diubah." << endl;
     }
     else
     {
-        cout << "Pesanan tidak ditemukan." << endl;
+        cout << "\tPesanan tidak ditemukan." << endl;
     }
 }
 
-void bayarPesanan(int idPesanan)
+void bayarPesanan()
 {
-    if (idPesanan > 0 && idPesanan <= pesanan.belakang + 1)
+    posisiRiwayat++;
+    int idR = posisiRiwayat;
+    int idP = pesananBelakang;
+
+    riwayatPesanan.namaPemesan[idR] = pesanan.namaPemesan[idP];
+    riwayatPesanan.asal[idR] = pesanan.asal[idP];
+    riwayatPesanan.alamat_asal[idR] = pesanan.alamat_asal[idP];
+    riwayatPesanan.tujuan[idR] = pesanan.tujuan[idP];
+    riwayatPesanan.alamat_tujuan[idR] = pesanan.alamat_tujuan[idP];
+    riwayatPesanan.noHp[idR] = pesanan.noHp[idP];
+    riwayatPesanan.waktu[idR] = pesanan.waktu[idP];
+    riwayatPesanan.estimasi[idR] = pesanan.estimasi[idP];
+    riwayatPesanan.jumlahOrang[idR] = pesanan.jumlahOrang[idP];
+    riwayatPesanan.harga[idR] = pesanan.harga[idP];
+    riwayatPesanan.status[idR] = STATUS[1];
+    riwayatPesanan.driver[idR] = pesanan.driver[idP];
+
+    for (int x = pesananDepan; x < pesananBelakang; x++)
     {
-        if (pesanan.status[idPesanan - 1] == STATUS[0])
-        {
-            pesanan.status[idPesanan - 1] = STATUS[1];
-            cout << "Pembayaran berhasil. Status pesanan berubah menjadi 'Mencari Supir'." << endl;
-        }
-        else
-        {
-            cout << "Pesanan ini tidak dapat dibayar atau sudah dibayar." << endl;
-        }
+        pesanan.namaPemesan[x] = pesanan.namaPemesan[x + 1];
+        pesanan.asal[x] = pesanan.asal[x + 1];
+        pesanan.alamat_asal[x] = pesanan.alamat_asal[x + 1];
+        pesanan.tujuan[x] = pesanan.tujuan[x + 1];
+        pesanan.alamat_tujuan[x] = pesanan.alamat_tujuan[x + 1];
+        pesanan.noHp[x] = pesanan.noHp[x + 1];
+        pesanan.waktu[x] = pesanan.waktu[x + 1];
+        pesanan.estimasi[x] = pesanan.estimasi[x + 1];
+        pesanan.jumlahOrang[x] = pesanan.jumlahOrang[x + 1];
+        pesanan.harga[x] = pesanan.harga[x + 1];
+        pesanan.status[x] = pesanan.status[x + 1];
+        pesanan.driver[x] = pesanan.driver[x + 1];
     }
-    else
+    pesananBelakang--;
+
+    cout << "\tPembayaran berhasil. Status pesanan berubah menjadi 'Sukses'." << endl;
+}
+
+void tampilRiwayat()
+{
+    if (posisiRiwayat == -1)
     {
-        cout << "Pesanan tidak ditemukan." << endl;
+        cout << "\tTidak ada Riwayat" << endl;
+        return;
+    }
+
+    cout << "\tDaftar Pesanan yang Sudah di Bayar:" << endl;
+    for (int i = posisiRiwayat; i >= 0; i--)
+    {
+        cout << "\tPesanan ke-" << i + 1 << endl;
+        cout << "\tNama Pemesan  : " << riwayatPesanan.namaPemesan[i] << endl;
+        cout << "\tAsal          : " << riwayatPesanan.asal[i] << endl;
+        cout << "\tAlamat Asal   : " << riwayatPesanan.alamat_asal[i] << endl;
+        cout << "\tTujuan        : " << riwayatPesanan.tujuan[i] << endl;
+        cout << "\tAlamat Tujuan : " << riwayatPesanan.alamat_tujuan[i] << endl;
+        cout << "\tNo. HP        : " << riwayatPesanan.noHp[i] << endl;
+        cout << "\tWaktu         : " << riwayatPesanan.waktu[i] << endl;
+        cout << "\tEstimasi      : " << riwayatPesanan.estimasi[i] << " jam" << endl;
+        cout << "\tJumlah Orang  : " << riwayatPesanan.jumlahOrang[i] << endl;
+        cout << "\tDriver        : " << riwayatPesanan.driver[i] << endl;
+        cout << "\tHarga         : Rp. " << riwayatPesanan.harga[i] << endl;
+        cout << "\tTotal Harga   : Rp. " << riwayatPesanan.jumlahOrang[i] * riwayatPesanan.harga[i] << endl;
+        cout << "\tStatus        : " << riwayatPesanan.status[i] << endl;
+        cout << "\t--------------------------" << endl;
     }
 }
 
-void layaniPesanan(int idPesanan)
+// fungsi rekap
+const int maxRekap = 99;
+struct rekapPenjualan
 {
-    if (idPesanan > 0 && idPesanan <= pesanan.belakang + 1)
+    string asalTravel;
+    string tujuanTravel;
+    int jumlahTiket;
+    int pendapatan;
+};
+rekapPenjualan rekap[maxRekap];
+int hitungRekap = 0;
+
+void rekapPesanan()
+{
+    if (posisiRiwayat == -1)
     {
-        if (pesanan.status[idPesanan - 1] == STATUS[1])
+        cout << "\tTidak ada pesanan yang dapat direkap." << endl;
+        return;
+    }
+    
+    for (int i = 0; i < maxRekap; i++)
+    {
+        rekap[i] = {"", "", 0, 0};
+    }
+
+    int totalTiketTerjual = 0;
+    int totalPendapatan = 0;
+    hitungRekap = 0;
+
+    for (int i = 0; i <= posisiRiwayat; i++)
+    {
+        bool ketemu = false;
+        for (int j = 0; j < hitungRekap; j++)
         {
-            for (int i = 0; i < jumlah_supir; i++)
+            if (rekap[j].asalTravel == riwayatPesanan.asal[i] && rekap[j].tujuanTravel == riwayatPesanan.tujuan[i])
             {
-                if (drivers[i].status)
-                {
-                    pesanan.status[idPesanan - 1] = STATUS[2];
-                    pesanan.driver[idPesanan - 1] = drivers[i].nama;
-                    cout << "Pesanan dilayani oleh supir: " << drivers[i].nama << ". Status pesanan berubah menjadi 'Sukses'." << endl;
-                    return;
-                }
+                rekap[j].jumlahTiket += riwayatPesanan.jumlahOrang[i];
+                rekap[j].pendapatan += riwayatPesanan.harga[i] * riwayatPesanan.jumlahOrang[i];
+                ketemu = true;
+                break;
             }
-            cout << "Tidak ada supir yang tersedia." << endl;
         }
-        else
+        if (!ketemu)
         {
-            cout << "Pesanan ini tidak dapat dilayani atau sudah dilayani." << endl;
+            rekap[hitungRekap].asalTravel = riwayatPesanan.asal[i];
+            rekap[hitungRekap].tujuanTravel = riwayatPesanan.tujuan[i];
+            rekap[hitungRekap].jumlahTiket = riwayatPesanan.jumlahOrang[i];
+            rekap[hitungRekap].pendapatan = riwayatPesanan.harga[i] * riwayatPesanan.jumlahOrang[i];
+            hitungRekap++;
         }
+
+        totalTiketTerjual += riwayatPesanan.jumlahOrang[i];
+        totalPendapatan += riwayatPesanan.harga[i] * riwayatPesanan.jumlahOrang[i];
     }
-    else
+
+    cout << "\tRekap Penjualan:" << endl;
+    for (int i = 0; i < hitungRekap; ++i)
     {
-        cout << "Pesanan tidak ditemukan." << endl;
+        cout << "\tRute: " << rekap[i].asalTravel << " - " << rekap[i].tujuanTravel << endl;
+        cout << "\tTerjual: " << rekap[i].jumlahTiket << " tiket" << endl;
+        cout << "\tPendapatan: Rp. " << rekap[i].pendapatan << endl;
+        cout << "\t--------------------------" << endl;
     }
+
+    cout << "\tTotal Tiket Terjual: " << totalTiketTerjual << " tiket" << endl;
+    cout << "\tTotal Pendapatan: Rp. " << totalPendapatan << endl;
 }

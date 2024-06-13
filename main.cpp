@@ -7,9 +7,9 @@ string inputPw;
 void menuLogin()
 {
     cin.ignore();
-    cout << "Masukkan username: ";
+    cout << "\tMasukkan username: ";
     getline(cin, inputUsr);
-    cout << "Masukkan password: ";
+    cout << "\tMasukkan password: ";
     getline(cin, inputPw);
 
     string role = login(inputUsr, inputPw);
@@ -23,19 +23,19 @@ void menuLogin()
     }
     else
     {
-        cout << "Login gagal!" << endl;
+        cout << "\tLogin gagal!" << endl;
     }
 }
 
 void menuRegister()
 {
     cin.ignore();
-    cout << "Masukkan username: ";
+    cout << "\tMasukkan username: ";
     getline(cin, inputUsr);
-    cout << "Masukkan password: ";
+    cout << "\tMasukkan password: ";
     getline(cin, inputPw);
 
-    cout << "Masukkan Usia: ";
+    cout << "\tMasukkan Usia: ";
     cin >> inputUsia;
     registrasi(inputUsr, inputPw, inputUsia);
 }
@@ -46,11 +46,12 @@ int main()
     int pilihan;
     do
     {
-        cout << "=== Menu ===" << endl;
-        cout << "1. Login" << endl;
-        cout << "2. Register" << endl;
-        cout << "3. Keluar" << endl;
-        cout << "Pilih: ";
+        system("cls");
+        cout << "\t=== Selamat Datang Di TravelKu ===" << endl;
+        cout << "\t1. Login" << endl;
+        cout << "\t2. Register" << endl;
+        cout << "\t3. Keluar" << endl;
+        cout << "\tPilih: ";
         cin >> pilihan;
 
         switch (pilihan)
@@ -66,10 +67,10 @@ int main()
             break;
         }
         case 3:
-            cout << "Keluar program." << endl;
+            cout << "\tKeluar program." << endl;
             break;
         default:
-            cout << "Pilihan tidak valid!" << endl;
+            cout << "\tPilihan tidak valid!" << endl;
         }
     } while (pilihan != 3);
 
