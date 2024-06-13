@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits>
+#include <unistd.h>
 
 using namespace std;
 
@@ -46,10 +47,12 @@ void registrasi(string username, string password, float usia)
     {
         users[jml_user++] = {username, password, usia, "user"};
         cout << "\tBerhasil mendaftar sebagai customer." << endl;
+        sleep(2);
     }
     else
     {
         cout << "\tUser limit reached" << endl;
+        sleep(2);
     }
 }
 
@@ -87,11 +90,11 @@ void tambahDriver(string nama, string plat_nomor, bool status)
     if (jumlah_supir < MAX_SUPIR)
     {
         drivers[jumlah_supir++] = {nama, plat_nomor, status};
-        cout << "\tBerhasil menambahkan supir." << endl;
     }
     else
     {
         cout << "\tSupir sudah penuh" << endl;
+        sleep(2);
     }
 }
 
@@ -133,7 +136,7 @@ struct Jadwal
     string tujuan;
     string hari;
     string waktu;
-    int estimasi;
+    float estimasi;
     string supir;
     int kursi;
     int harga;
@@ -148,9 +151,21 @@ Jadwal *jadwal;
 Jadwal *head = NULL;
 Jadwal *tail = NULL;
 
-void buatJadwal(string asal, string tujuan, int hariIndex, string waktu, int estimasi, string supir, int kursi, int harga)
+void buatJadwal(string asal, string tujuan, int hariIndex, string waktu, float estimasi, int supir, int kursi, int harga)
 {
-    jadwal = new Jadwal{id_jadwal++, asal, tujuan, HARI[hariIndex], waktu, estimasi, supir, kursi, harga, NULL, NULL};
+    jadwal = new Jadwal{id_jadwal++, asal, tujuan, HARI[hariIndex], waktu, estimasi, drivers[supir - 1].nama, kursi, harga, NULL, NULL};
+    if (!head && !tail)
+    {
+        head = tail = jadwal;
+        head->next = head->prev = head;
+    }
+    else
+    {
+        tail->next = jadwal;
+        jadwal->prev = tail;
+        jadwal->next = head;
+        head->prev = tail = jadwal;
+    }
 }
 
 void tambahJadwal()
@@ -197,19 +212,7 @@ void tambahJadwal()
     cout << "\tMasukkan harga: ";
     cin >> harga;
 
-    buatJadwal(asal, tujuan, hariIndex, waktu, estimasi, drivers[pilihSupir - 1].nama, kursi, harga);
-    if (!head && !tail)
-    {
-        head = tail = jadwal;
-        head->next = head->prev = head;
-    }
-    else
-    {
-        tail->next = jadwal;
-        jadwal->prev = tail;
-        jadwal->next = head;
-        head->prev = tail = jadwal;
-    }
+    buatJadwal(asal, tujuan, hariIndex, waktu, estimasi, pilihSupir, kursi, harga);
     cout << "\tJadwal berhasil ditambahkan!" << endl;
 }
 
@@ -272,6 +275,14 @@ void hapusJadwal(int id)
         if (target == tail)
             tail = tail->prev;
     }
+
+    // Jadwal *current = target->next;
+    // while (current != head)
+    // {
+    //     current->id -= 1;
+    //     current = current->next;
+    // }
+
     delete target;
     cout << "\tJadwal berhasil dihapus!" << endl;
 }
@@ -286,7 +297,7 @@ struct Pesanan
     string alamat_tujuan[MAX_PESANAN];
     string noHp[MAX_PESANAN];
     string waktu[MAX_PESANAN];
-    int estimasi[MAX_PESANAN];
+    float estimasi[MAX_PESANAN];
     int harga[MAX_PESANAN];
     int jumlahOrang[MAX_PESANAN];
     string status[MAX_PESANAN];
@@ -409,7 +420,7 @@ void bayarPesanan()
 {
     posisiRiwayat++;
     int idR = posisiRiwayat;
-    int idP = pesananBelakang;
+    int idP = pesananDepan;
 
     riwayatPesanan.namaPemesan[idR] = pesanan.namaPemesan[idP];
     riwayatPesanan.asal[idR] = pesanan.asal[idP];
@@ -441,7 +452,9 @@ void bayarPesanan()
     }
     pesananBelakang--;
 
-    cout << "\tPembayaran berhasil. Status pesanan berubah menjadi 'Sukses'." << endl;
+    cout << "\tMemproses Pesananan......." << endl;
+    sleep(1);
+    cout << "\n\tPembayaran berhasil. Status pesanan berubah menjadi 'Sukses'." << endl;
 }
 
 void tampilRiwayat()
@@ -492,7 +505,7 @@ void rekapPesanan()
         cout << "\tTidak ada pesanan yang dapat direkap." << endl;
         return;
     }
-    
+
     for (int i = 0; i < maxRekap; i++)
     {
         rekap[i] = {"", "", 0, 0};

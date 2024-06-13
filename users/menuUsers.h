@@ -51,6 +51,8 @@ void menu_admin()
             cout << "\tMasukkan status (1 untuk aktif, 0 untuk tidak aktif): ";
             cin >> status;
             tambahDriver(namaSupir, plat, status);
+            
+            cout << "\tBerhasil menambahkan supir." << endl;
             break;
         }
         case 6:

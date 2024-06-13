@@ -37,11 +37,21 @@ void menuRegister()
 
     cout << "\tMasukkan Usia: ";
     cin >> inputUsia;
+
+    if (inputUsia < 17)
+    {
+        cout << "\tMaaf minimal usia pendaftar adalah 17 Tahun" << endl;
+        sleep(2);
+        return;
+    }
     registrasi(inputUsr, inputPw, inputUsia);
 }
 
 int main()
 {
+    tambahDriver("Pak Joko", "R 113", 1);
+    buatJadwal("Bumiayu", "Purwokerto", 0, "07:00", 1.30, 1, 5, 35000);
+    registrasi("budi", "budi123", 20);
     inisialisasiAdmin();
     int pilihan;
     do
